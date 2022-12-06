@@ -5,8 +5,8 @@ import com.autolink.audioextservice.IVisualizerCallback;
 
 interface IAudioExtControl {
 
-    String getMusicTactics();
-    String getVoiceTactics();
+    String toMusicTacticsJson();
+    String toVoiceTacticsJson();
     float getMusicAntiShake();
     float getVoiceAntiShake();
     void setMusicAntiShake(float antiShake);

@@ -1,6 +1,5 @@
 package com.autolink.lightshowcontrolpanel;
 
-import android.app.PictureInPictureParams;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -28,6 +27,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.toString();
     public static final Gson GSON_INSTANCE;
+
     static {
         GSON_INSTANCE = new Gson();
     }
@@ -114,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             switch (invoke){
                 case INVOKE_GET_MUSIC_TACTIC:
-                    res = (T) mBinder.getMusicTactics();
+                    res = (T) mBinder.toMusicTacticsJson();
                     break;
                 case INVOKE_GET_VOICE_TACTIC:
-                    res = (T) mBinder.getVoiceTactics();
+                    res = (T) mBinder.toVoiceTacticsJson();
                     break;
                 case INVOKE_GET_MUSIC_SHAKE:
                     res = (T) (Float)mBinder.getMusicAntiShake();
