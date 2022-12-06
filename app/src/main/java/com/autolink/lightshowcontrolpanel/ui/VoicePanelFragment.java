@@ -211,13 +211,13 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
         public void onBindViewHolder(VoicePanelFragment.RecyclerViewHolder holder, int position) {
 
             View itemView = holder.itemView;
-            float[] data = mData[position];
+            float[] data = mData[position + 5];
             CheckBox checkBox = itemView.findViewById(R.id.is_show);
             TextView indexTextView = itemView.findViewById(R.id.text_view_index);
             EditText offsetTextView = itemView.findViewById(R.id.edit_text_offset);
             EditText gainTextView = itemView.findViewById(R.id.edit_text_gain);
             indexTextView.setText(String.format("%02d", position));
-            String history = sp.getString("voice@" + position, MainActivity.UNKNOWN_STRING);
+            String history = sp.getString("voice@" + (position + 5), MainActivity.UNKNOWN_STRING);
             if (history != MainActivity.UNKNOWN_STRING) {
                 try {
                     String[] hs = history.split(",");
@@ -227,14 +227,14 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
                     data[4] = gain;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e(TAG, "failed to parse the history position=" + position);
+                    Log.e(TAG, "failed to parse the history position=" + (position + 5));
                 }
             }
             offsetTextView.setText("" + data[3]);
             gainTextView.setText("" + data[4]);
             checkBox.setChecked(data[0] == 1 ? true : false);
             gainTextView.setEnabled(checkBox.isChecked());
-            mParent.remoteInvoker(MainActivity.INVOKE_SET_MUSIC_GAIN, new Object[]{position, data[0] == 1 ? data[4] : 0.0f});
+            mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + 5, data[0] == 1 ? data[4] : 0.0f});
             checkBox.setOnClickListener(v -> {
                 float gain = 0.0f;
                 data[0] = ((CheckBox) v).isChecked() ? 1 : 0;
@@ -247,13 +247,13 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
                     }
                 };
                 gainTextView.setEnabled(data[0] == 1 ? true : false);
-                mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position, gain});
+                mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + 5, gain});
             });
             gainTextView.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
                     try {
                         data[4] = Float.parseFloat(((EditText) (v)).getText().toString());
-                        mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position, data[4]});
+                        mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + 5, data[4]});
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(mParent.getApplicationContext(), "应用失败，数据不合法！", Toast.LENGTH_LONG).show();
@@ -264,17 +264,16 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
 
         @Override
         public int getItemCount() {
-            return mData.length;
+            return 16;
         }
 
         public int saveHistory() {
             int retState = MainActivity.STATE_SUCCESS;
-            int size = mData.length;
             try {
                 sp.edit()
                         .putFloat("voice@shake", DATA_STORE.sVoiceAntiShake)
                         .apply();
-                for (int i = 0; i < size; ++i) {
+                for (int i = 5; i < 21; ++i) {
                     sp.edit()
                             .putString("voice@" + i, String.format("%f,%f,%f,%f,%f", mData[i][0], mData[i][1], mData[i][2], mData[i][3], mData[i][4]))
                             .apply();
