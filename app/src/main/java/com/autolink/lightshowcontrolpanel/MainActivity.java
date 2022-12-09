@@ -26,24 +26,27 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.toString();
+
     public static final Gson GSON_INSTANCE;
 
     static {
         GSON_INSTANCE = new Gson();
     }
 
-    public static final String UNKNOWN_STRING = null;
-    public static final int STATE_SUCCESS = 0;
-    public static final int STATE_ERROR = -1;
+    public static final byte STATE_SUCCESS = 0;
+    public static final byte STATE_ERROR = -1;
 
-    private static final int INVOKE_GET_MUSIC_TACTIC = 0b000;
-    private static final int INVOKE_GET_VOICE_TACTIC = 0b001;
-    private static final int INVOKE_GET_MUSIC_SHAKE = 0b010;
-    private static final int INVOKE_GET_VOICE_SHAKE = 0b100;
-    public static final int INVOKE_SET_MUSIC_SHAKE = 0b110;
-    public static final int INVOKE_SET_VOICE_SHAKE = 0b101;
-    public static final int INVOKE_SET_MUSIC_GAIN = 0b011;
-    public static final int INVOKE_SET_VOICE_GAIN = 0b111;
+    public static final String UNKNOWN_STRING = null;
+
+    private static final byte INVOKE_GET_MUSIC_TACTIC = 0b000;
+    private static final byte INVOKE_GET_VOICE_TACTIC = 0b001;
+    private static final byte INVOKE_GET_MUSIC_SHAKE = 0b010;
+    private static final byte INVOKE_GET_VOICE_SHAKE = 0b100;
+    public static final byte INVOKE_SET_MUSIC_SHAKE = 0b110;
+    public static final byte INVOKE_SET_VOICE_SHAKE = 0b101;
+    public static final byte INVOKE_SET_MUSIC_GAIN = 0b011;
+    public static final byte INVOKE_SET_VOICE_GAIN = 0b111;
+
 
     public SharedPreferences mSharedPreferences;
     private ServiceConnection mConnection;

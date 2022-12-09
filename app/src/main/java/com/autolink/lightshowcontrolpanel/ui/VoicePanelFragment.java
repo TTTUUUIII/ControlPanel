@@ -34,12 +34,15 @@ import com.autolink.lightshowcontrolpanel.ui.iview.SpectrumDefaultView;
 
 public class VoicePanelFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = VoicePanelFragment.class.getSimpleName();
+    private static final int OFFSET = 6;
+    private static final int SIZE = 7;
 
     private int timing = 0;
     private boolean mShowReview = false;
     private boolean mPageFinished = false;
 
     private float[][] mData;
+    private byte[] mChartByte = new byte[SIZE];
 
     private MainActivity mParent;
     private Handler mHandler;
@@ -59,12 +62,13 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
             @Override
             public void onDataChanged(byte[] sentByte) {
                 if (mShowReview && timing % (20 * 2) == 0) {
+                    System.arraycopy(sentByte, OFFSET, mChartByte, 0, mChartByte.length);
                     mHandler.post(() -> {
-                        mSpectrumView.refresh(sentByte);
+                        mSpectrumView.refresh(mChartByte);
                     });
                     if (timing % (20 * 140) == 0 && mPageFinished) {
                         mHandler.post(() -> {
-                            mChartWebView.loadChart(new LineOption().setData(sentByte).toString());
+                            mChartWebView.loadChart(new LineOption(SIZE).setData(mChartByte).toString());
                         });
                         timing = 0;
                     }
@@ -102,14 +106,15 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 mPageFinished = true;
+                mChartWebView.loadChart(new LineOption(SIZE).setData(new byte[SIZE]).toString());
             }
         });
         mReviewSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             mShowReview = isChecked;
             if (!mShowReview) {
                 mHandler.post(() -> {
-                    mSpectrumView.refresh(new byte[31]);
-                    mChartWebView.loadChart("reset");
+                    mSpectrumView.refresh(new byte[SIZE]);
+                    mChartWebView.loadChart(new LineOption(SIZE).setData(new byte[SIZE]).toString());
                 });
             }
         });
@@ -211,13 +216,13 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
         public void onBindViewHolder(VoicePanelFragment.RecyclerViewHolder holder, int position) {
 
             View itemView = holder.itemView;
-            float[] data = mData[position + 5];
+            float[] data = mData[position + OFFSET];
             CheckBox checkBox = itemView.findViewById(R.id.is_show);
             TextView indexTextView = itemView.findViewById(R.id.text_view_index);
             EditText offsetTextView = itemView.findViewById(R.id.edit_text_offset);
             EditText gainTextView = itemView.findViewById(R.id.edit_text_gain);
             indexTextView.setText(String.format("%02d", position));
-            String history = sp.getString("voice@" + (position + 5), MainActivity.UNKNOWN_STRING);
+            String history = sp.getString("voice@" + (position + OFFSET), MainActivity.UNKNOWN_STRING);
             if (history != MainActivity.UNKNOWN_STRING) {
                 try {
                     String[] hs = history.split(",");
@@ -227,14 +232,14 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
                     data[4] = gain;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e(TAG, "failed to parse the history position=" + (position + 5));
+                    Log.e(TAG, "failed to parse the history position=" + (position + OFFSET));
                 }
             }
             offsetTextView.setText("" + data[3]);
             gainTextView.setText("" + data[4]);
             checkBox.setChecked(data[0] == 1 ? true : false);
             gainTextView.setEnabled(checkBox.isChecked());
-            mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + 5, data[0] == 1 ? data[4] : 0.0f});
+            mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + OFFSET, data[0] == 1 ? data[4] : 0.0f});
             checkBox.setOnClickListener(v -> {
                 float gain = 0.0f;
                 data[0] = ((CheckBox) v).isChecked() ? 1 : 0;
@@ -247,13 +252,13 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
                     }
                 };
                 gainTextView.setEnabled(data[0] == 1 ? true : false);
-                mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + 5, gain});
+                mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + OFFSET, gain});
             });
             gainTextView.setOnFocusChangeListener((v, hasFocus) -> {
                 if (!hasFocus) {
                     try {
                         data[4] = Float.parseFloat(((EditText) (v)).getText().toString());
-                        mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + 5, data[4]});
+                        mParent.remoteInvoker(MainActivity.INVOKE_SET_VOICE_GAIN, new Object[]{position + OFFSET, data[4]});
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(mParent.getApplicationContext(), "应用失败，数据不合法！", Toast.LENGTH_LONG).show();
@@ -264,7 +269,7 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
 
         @Override
         public int getItemCount() {
-            return 16;
+            return SIZE;
         }
 
         public int saveHistory() {
@@ -273,7 +278,7 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
                 sp.edit()
                         .putFloat("voice@shake", DATA_STORE.sVoiceAntiShake)
                         .apply();
-                for (int i = 5; i < 21; ++i) {
+                for (int i = OFFSET; i < OFFSET + SIZE; ++i) {
                     sp.edit()
                             .putString("voice@" + i, String.format("%f,%f,%f,%f,%f", mData[i][0], mData[i][1], mData[i][2], mData[i][3], mData[i][4]))
                             .apply();

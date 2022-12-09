@@ -64,7 +64,7 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
                     });
                     if (timing % (20 * 140) == 0 && mPageFinished) {
                         mHandler.post(() -> {
-                            mChartWebView.loadChart(new LineOption().setData(sentByte).toString());
+                            mChartWebView.loadChart(new LineOption(31).setData(sentByte).toString());
                         });
                         timing = 0;
                     }
@@ -103,6 +103,7 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 mPageFinished = true;
+                mChartWebView.loadChart(new LineOption(31).setData(new byte[31]).toString());
             }
         });
 
@@ -111,7 +112,7 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
             if (!mShowReview) {
                 mHandler.post(() -> {
                     mSpectrumView.refresh(new byte[31]);
-                    mChartWebView.loadChart("reset");
+                    mChartWebView.loadChart(new LineOption(31).setData(new byte[31]).toString());
                 });
             }
         });

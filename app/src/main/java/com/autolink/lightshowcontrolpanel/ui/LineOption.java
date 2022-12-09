@@ -10,10 +10,10 @@ public class LineOption {
    private HashMap<String, Object> yAxis = new HashMap();
    private HashMap<String, Object> series = new HashMap();
 
-    public LineOption(){
-        String[] xData = new String[31];
-        for (int i = 1; i <= xData.length; i++){
-            xData[i - 1] = "频段" + i;
+    public LineOption(int xSize){
+        String[] xData = new String[xSize];
+        for (int i = 0; i < xData.length; i++){
+            xData[i] = "频段" + i;
         }
         yAxis.put("type", "category");
         yAxis.put("data", xData);

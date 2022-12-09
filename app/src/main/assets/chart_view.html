@@ -11,15 +11,12 @@
 
 <script type="text/javascript">
     var myChart;
-    var resetJson = '{"series":{"data":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"type":"line"},"xAxis":{"type":"value"},"yAxis":{"data":["频段1","频段2","频段3","频段4","频段5","频段6","频段7","频段8","频段9","频段10","频段11","频段12","频段13","频段14","频段15","频段16","频段17","频段18","频段19","频段20","频段21","频段22","频段23","频段24","频段25","频段26","频段27","频段28","频段29","频段30","频段31"],"type":"category"}}';
     window.onload = () => {
         let dom = document.getElementById("container");
         myChart = echarts.init(dom);
-        load(resetJson);
     }
 
     function load(dataJson){
-        if(dataJson === "reset") dataJson = resetJson;
         let option = JSON.parse(dataJson);
         dataJson && myChart.setOption(option);
     }
