@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 public class LineOption {
    private String backgroundColor = "";
+   private boolean animation = true;
+
    private HashMap<String, Object> xAxis = new HashMap();
    private HashMap<String, Object> yAxis = new HashMap();
    private HashMap<String, Object> series = new HashMap();
@@ -23,6 +25,11 @@ public class LineOption {
 
     public LineOption setData(byte[] data){
         series.put("data", data);
+        return this;
+    }
+
+    public LineOption setAnimation(boolean animation) {
+        this.animation = animation;
         return this;
     }
 

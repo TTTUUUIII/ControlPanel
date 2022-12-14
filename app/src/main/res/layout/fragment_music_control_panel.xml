@@ -62,6 +62,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="预览："/>
+            <Switch
+                android:id="@+id/switch_mock"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="模拟："/>
             <Button
                 android:id="@+id/save_btn"
                 android:layout_marginLeft="80dp"

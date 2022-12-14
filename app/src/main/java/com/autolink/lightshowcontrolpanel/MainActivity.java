@@ -38,14 +38,15 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String UNKNOWN_STRING = null;
 
-    private static final byte INVOKE_GET_MUSIC_TACTIC = 0b000;
-    private static final byte INVOKE_GET_VOICE_TACTIC = 0b001;
-    private static final byte INVOKE_GET_MUSIC_SHAKE = 0b010;
-    private static final byte INVOKE_GET_VOICE_SHAKE = 0b100;
-    public static final byte INVOKE_SET_MUSIC_SHAKE = 0b110;
-    public static final byte INVOKE_SET_VOICE_SHAKE = 0b101;
-    public static final byte INVOKE_SET_MUSIC_GAIN = 0b011;
-    public static final byte INVOKE_SET_VOICE_GAIN = 0b111;
+    private static final byte INVOKE_GET_MUSIC_TACTIC = 0b0000;
+    private static final byte INVOKE_GET_VOICE_TACTIC = 0b0001;
+    private static final byte INVOKE_GET_MUSIC_SHAKE = 0b0010;
+    private static final byte INVOKE_GET_VOICE_SHAKE = 0b0100;
+    public static final byte INVOKE_SET_MUSIC_SHAKE = 0b1000;
+    public static final byte INVOKE_SET_VOICE_SHAKE = 0b0011;
+    public static final byte INVOKE_SET_MUSIC_GAIN = 0b0101;
+    public static final byte INVOKE_SET_VOICE_GAIN = 0b1001;
+    public static final byte INVOKE_SET_MUSIC_MOCK = 0b0110;
 
 
     public SharedPreferences mSharedPreferences;
@@ -112,21 +113,21 @@ public class MainActivity extends AppCompatActivity {
         unbindService(mConnection);
     }
 
-    public <T, R> T remoteInvoker(int invoke, R obj){
-        T res = null;
+    public <T, R> R remoteInvoker(int invoke, T obj){
+        R res = null;
         try {
             switch (invoke){
                 case INVOKE_GET_MUSIC_TACTIC:
-                    res = (T) mBinder.toMusicTacticsJson();
+                    res = (R) mBinder.toMusicTacticsJson();
                     break;
                 case INVOKE_GET_VOICE_TACTIC:
-                    res = (T) mBinder.toVoiceTacticsJson();
+                    res = (R) mBinder.toVoiceTacticsJson();
                     break;
                 case INVOKE_GET_MUSIC_SHAKE:
-                    res = (T) (Float)mBinder.getMusicAntiShake();
+                    res = (R) (Float)mBinder.getMusicAntiShake();
                     break;
                 case INVOKE_GET_VOICE_SHAKE:
-                    res = (T) (Float)mBinder.getVoiceAntiShake();
+                    res = (R) (Float)mBinder.getVoiceAntiShake();
                     break;
                 case INVOKE_SET_MUSIC_SHAKE:
                     mBinder.setMusicAntiShake((float)obj);
@@ -141,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
                 case INVOKE_SET_VOICE_GAIN:
                     Object[] p2 = (Object[]) obj;
                     mBinder.setVoiceGain((int)p2[0], (float)p2[1]);
+                    break;
+                case INVOKE_SET_MUSIC_MOCK:
+                    mBinder.setMusicMockTest((boolean)obj);
                     break;
                 default:
             }

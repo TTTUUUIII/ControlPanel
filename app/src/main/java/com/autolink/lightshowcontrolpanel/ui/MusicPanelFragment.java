@@ -31,6 +31,8 @@ import com.autolink.lightshowcontrolpanel.R;
 import com.autolink.lightshowcontrolpanel.ui.iview.ChartWebView;
 import com.autolink.lightshowcontrolpanel.ui.iview.SpectrumDefaultView;
 
+import java.util.Arrays;
+
 
 public class MusicPanelFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = MusicPanelFragment.class.getSimpleName();
@@ -49,6 +51,7 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
     private RecyclerView mRecyclerView;
     private RecyclerViewAdapter mViewAdapter;
     private Switch mReviewSwitch;
+    private Switch mMockSwitch;
     private Button mSaveButton;
     private IVisualizerCallback.Stub mDataCallback;
 
@@ -58,18 +61,21 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
         mDataCallback = new IVisualizerCallback.Stub() {
             @Override
             public void onDataChanged(byte[] sentByte) {
-                if (mShowReview && timing % (20 * 2) == 0) {
-                    mHandler.post(() -> {
+                if (mShowReview){
+                    mHandler.postAtTime(() -> {
                         mSpectrumView.refresh(sentByte);
-                    });
-                    if (timing % (20 * 140) == 0 && mPageFinished) {
+                    }, 0);
+                    boolean showChart = mMockSwitch.isChecked() || timing >= 20 * 200;
+
+                    if (showChart && mPageFinished){
+                        boolean showChartAnimation = !mMockSwitch.isChecked();
                         mHandler.post(() -> {
-                            mChartWebView.loadChart(new LineOption(31).setData(sentByte).toString());
+                            mChartWebView.loadChart(new LineOption(31).setData(sentByte).setAnimation(showChartAnimation).toString());
                         });
-                        timing = 0;
+                        if (timing >= 20 * 200) timing = 0;
                     }
+                    timing += 20;
                 }
-                timing += 20;
             }
         };
 
@@ -90,6 +96,7 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
         mSpectrumView = view.findViewById(R.id.spectrum_view);
         mChartWebView = view.findViewById(R.id.chart_view);
         mReviewSwitch = view.findViewById(R.id.switch_review);
+        mMockSwitch = view.findViewById(R.id.switch_mock);
         mSaveButton = view.findViewById(R.id.save_btn);
         mSaveButton.setOnClickListener(this);
         mViewAdapter = new RecyclerViewAdapter(mParent.mSharedPreferences);
@@ -116,6 +123,10 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
                 });
             }
         });
+        mMockSwitch.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+            mParent.remoteInvoker(MainActivity.INVOKE_SET_MUSIC_MOCK, isChecked);
+            if (isChecked && !mReviewSwitch.isChecked()) mReviewSwitch.setChecked(true);
+        }));
         mAntiShakeEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 try {

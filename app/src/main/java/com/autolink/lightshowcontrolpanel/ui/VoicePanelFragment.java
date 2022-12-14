@@ -61,12 +61,12 @@ public class VoicePanelFragment extends Fragment implements View.OnClickListener
         mDataCallback = new IVisualizerCallback.Stub() {
             @Override
             public void onDataChanged(byte[] sentByte) {
-                if (mShowReview && timing % (20 * 2) == 0) {
+                if (mShowReview) {
                     System.arraycopy(sentByte, OFFSET, mChartByte, 0, mChartByte.length);
                     mHandler.post(() -> {
-                        mSpectrumView.refresh(mChartByte);
+                        mSpectrumView.refresh(sentByte);
                     });
-                    if (timing % (20 * 140) == 0 && mPageFinished) {
+                    if (timing >= 20 * 200 && mPageFinished) {
                         mHandler.post(() -> {
                             mChartWebView.loadChart(new LineOption(SIZE).setData(mChartByte).toString());
                         });

@@ -14,14 +14,14 @@ public class SpectrumDefaultView extends BaseSpectrumView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        paint.setStrokeWidth(5.0f);
+        paint.setStrokeWidth(7.0f);
         if (magnitudes != null){
             for (int i = 0; i < magnitudes.length; i++){
                 paint.setColor(choicePaintColor(magnitudes[i]));
                 float aStartX = 0.0f;
-                float aStartY = i * (getHeight() / magnitudes.length) + 8.0f;
+                float aStartY = i * (getHeight() / magnitudes.length) + 10.0f;
                 float aStopX = (float)magnitudes[i] / 15 * getHeight();
-                float aStopY = i * (getHeight() / magnitudes.length) + 8.0f;
+                float aStopY = i * (getHeight() / magnitudes.length) + 10.0f;
                 canvas.drawLine(aStartX, aStartY, aStopX, aStopY, paint);
             }
         }
