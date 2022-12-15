@@ -31,8 +31,6 @@ import com.autolink.lightshowcontrolpanel.R;
 import com.autolink.lightshowcontrolpanel.ui.iview.ChartWebView;
 import com.autolink.lightshowcontrolpanel.ui.iview.SpectrumDefaultView;
 
-import java.util.Arrays;
-
 
 public class MusicPanelFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = MusicPanelFragment.class.getSimpleName();
@@ -124,6 +122,7 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
             }
         });
         mMockSwitch.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+            DATA_STORE.sMusicMockIsEnable = isChecked;
             mParent.remoteInvoker(MainActivity.INVOKE_SET_MUSIC_MOCK, isChecked);
             if (isChecked && !mReviewSwitch.isChecked()) mReviewSwitch.setChecked(true);
         }));
@@ -139,12 +138,16 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
                 }
             }
         });
+        mMockSwitch.setChecked(DATA_STORE.sMusicMockIsEnable);
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mParent = (MainActivity) context;
+        DATA_STORE.sMusicMockPeak = (byte) mParent.mSharedPreferences.getInt("music@peak", 15);
+        mParent.remoteInvoker(MainActivity.INVOKE_SET_MUSIC_MOCK_INFO, DATA_STORE.sMusicMockPeak);
+        mParent.notifyMusicPeakChanged();
     }
 
     @Override
@@ -285,6 +288,9 @@ public class MusicPanelFragment extends Fragment implements View.OnClickListener
             try {
                 sp.edit()
                         .putFloat("music@shake", DATA_STORE.sMusicAntiShake)
+                        .apply();
+                sp.edit()
+                        .putInt("music@peak", DATA_STORE.sMusicMockPeak)
                         .apply();
                 for (int i = 0; i < size; ++i) {
                     sp.edit()

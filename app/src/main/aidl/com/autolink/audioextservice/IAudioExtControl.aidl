@@ -14,6 +14,11 @@ interface IAudioExtControl {
     int setMusicGain(int key, float value);
     int setVoiceGain(int key, float value);
     void setMusicMockTest(boolean enable);
+    boolean getMusicMockTest();
+    void setMusicMockInfo(byte value);
+    byte getMusicMockInfo();
+    int setCollectDelay(int delay);
+    int getCollectDelay();
     void registerDataCallback(IVisualizerCallback callback);
     void unregisterDataCallback(IVisualizerCallback callback);
 }

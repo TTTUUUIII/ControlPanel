@@ -30,7 +30,7 @@ public class SpectrumDefaultView extends BaseSpectrumView {
     private int choicePaintColor(float m){
         int color;
         if (m < 5){
-            color = 0xffffffff;
+            color = 0xff000000;
         }else if (m < 8){
             color = 0xff00ff00;
         }else if (m < 12){
