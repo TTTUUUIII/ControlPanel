@@ -20,6 +20,8 @@ public class LineOption {
         yAxis.put("type", "category");
         yAxis.put("data", xData);
         xAxis.put("type", "value");
+        xAxis.put("min", 0);
+        xAxis.put("max", 15);
         series.put("type", "line");
     }
 
